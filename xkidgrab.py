@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+ESCAPE_COUNT = 3
 from Xlib.display import Display
 from Xlib import X, XK, Xcursorfont
 
@@ -29,6 +30,11 @@ print "# grab pointer:", root.grab_pointer(False,
 print "# grab keyboard:", root.grab_keyboard(False,
 	X.GrabModeAsync, X.GrabModeAsync, X.CurrentTime)
 
+# cheap.
+import os
+os.system('notify-send "XKidGrab" "Keyboard and mouse buttons grabbed.' +
+	'  Exit by pressing Escape %d times."' % ESCAPE_COUNT)
+
 active_cnt = 0
 escape_cnt = 0
 try:
@@ -53,7 +59,7 @@ try:
 				print "# escape:", escape_cnt
 			else:
 				escape_cnt = 0
-			if escape_cnt >= 3:
+			if escape_cnt >= ESCAPE_COUNT:
 				break
 finally:
 	dpy.ungrab_keyboard(X.CurrentTime)
