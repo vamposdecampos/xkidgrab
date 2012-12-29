@@ -16,6 +16,11 @@ root = dpy.screen().root
 cursor = create_font_cursor(dpy, Xcursorfont.pirate)
 esc_keycode = dpy.keysym_to_keycode(XK.XK_Escape)
 
+# other intersting keys:
+XK.load_keysym_group('xf86')
+XK.XK_XF86_PowerOff
+XK.XK_XF86_AudioMedia
+
 print "# grab pointer:", root.grab_pointer(False,
 	X.ButtonPressMask | X.ButtonReleaseMask,
 	X.GrabModeAsync, X.GrabModeAsync, X.NONE, cursor, X.CurrentTime)
