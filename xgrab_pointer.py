@@ -30,6 +30,7 @@ print "# grab keyboard:", root.grab_keyboard(False,
 	X.GrabModeAsync, X.GrabModeAsync, X.CurrentTime)
 
 active_cnt = 0
+escape_cnt = 0
 try:
 	while True:
 		ev = root.display.next_event()
@@ -46,9 +47,14 @@ try:
 				active_cursor if active_cnt else cursor,
 				X.CurrentTime)
 
-		if ev.type == X.KeyRelease and ev.detail == esc_keycode:
-			print "# escape"
-			break
+		if ev.type == X.KeyRelease:
+			if ev.detail == esc_keycode:
+				escape_cnt += 1
+				print "# escape:", escape_cnt
+			else:
+				escape_cnt = 0
+			if escape_cnt >= 3:
+				break
 finally:
 	dpy.ungrab_keyboard(X.CurrentTime)
 	dpy.ungrab_pointer(X.CurrentTime)
