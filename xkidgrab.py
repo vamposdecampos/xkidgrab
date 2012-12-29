@@ -3,6 +3,7 @@
 ESCAPE_COUNT = 3
 from Xlib.display import Display
 from Xlib import X, XK, Xcursorfont
+import sys
 
 def create_font_cursor(dpy, cursor_idx,
 		fore=(0xffff, 0xffff, 0xffff),
@@ -12,6 +13,7 @@ def create_font_cursor(dpy, cursor_idx,
 		cursor_idx, cursor_idx + 1,
 		fore, back)
 
+verbose = "-v" in sys.argv[1:]
 dpy = Display()
 root = dpy.screen().root
 
@@ -40,7 +42,8 @@ escape_cnt = 0
 try:
 	while True:
 		ev = root.display.next_event()
-		print "event:", ev
+		if verbose:
+			print "event:", ev
 
 		last_active = active_cnt
 		if ev.type in (X.ButtonPress, X.KeyPress):
