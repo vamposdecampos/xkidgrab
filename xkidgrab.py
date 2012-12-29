@@ -46,7 +46,8 @@ try:
 		if ev.type in (X.ButtonPress, X.KeyPress):
 			active_cnt += 1
 		elif ev.type in (X.ButtonRelease, X.KeyRelease):
-			active_cnt -= 1
+			if active_cnt > 0:
+				active_cnt -= 1
 
 		if (not not last_active) != (not not active_cnt):
 			dpy.change_active_pointer_grab(X.ButtonPressMask | X.ButtonReleaseMask,
