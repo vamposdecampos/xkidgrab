@@ -3,17 +3,19 @@
 from Xlib.display import Display
 from Xlib import X, XK, Xcursorfont
 
-def create_font_cursor(dpy, cursor_idx):
+def create_font_cursor(dpy, cursor_idx,
+		fore=(0xffff, 0xffff, 0xffff),
+		back=(0, 0, 0)):
 	cursor_font = dpy.open_font('cursor')
 	return cursor_font.create_glyph_cursor(cursor_font,
 		cursor_idx, cursor_idx + 1,
-		# swapped bg/fg colors
-		(0xffff, 0xffff, 0xffff), (0, 0, 0))
+		fore, back)
 
 dpy = Display()
 root = dpy.screen().root
 
 cursor = create_font_cursor(dpy, Xcursorfont.pirate)
+active_cursor = create_font_cursor(dpy, Xcursorfont.pirate, fore=(0xffff, 0, 0))
 esc_keycode = dpy.keysym_to_keycode(XK.XK_Escape)
 
 # other intersting keys:
@@ -27,10 +29,22 @@ print "# grab pointer:", root.grab_pointer(False,
 print "# grab keyboard:", root.grab_keyboard(False,
 	X.GrabModeAsync, X.GrabModeAsync, X.CurrentTime)
 
+active_cnt = 0
 try:
 	while True:
 		ev = root.display.next_event()
 		print "event:", ev
+
+		last_active = active_cnt
+		if ev.type in (X.ButtonPress, X.KeyPress):
+			active_cnt += 1
+		elif ev.type in (X.ButtonRelease, X.KeyRelease):
+			active_cnt -= 1
+
+		if (not not last_active) != (not not active_cnt):
+			dpy.change_active_pointer_grab(X.ButtonPressMask | X.ButtonReleaseMask,
+				active_cursor if active_cnt else cursor,
+				X.CurrentTime)
 
 		if ev.type == X.KeyRelease and ev.detail == esc_keycode:
 			print "# escape"
